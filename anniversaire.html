@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joyeux Anniversaire!</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #e0f7fa;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #00796b;
+        }
+        p {
+            font-size: 20px;
+        }
+        button {
+            background-color: #00796b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #004d40;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="container">
+            <h1>Joyeux Anniversaire!</h1>
+            <p>Bon anniversaire pour tes 24 ans, développeur mobile extraordinaire!</p>
+            <button onclick="playConfetti()">Clique ici pour une surprise!</button>
+        </div>
+        
+        <canvas id="confettiCanvas"></canvas>
+    </div>
+
+    <script>
+        function playConfetti() {
+            document.querySelector('.container').style.display = 'none';
+            var canvas = document.getElementById('confettiCanvas');
+            canvas.style.display = 'block';
+            var context = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            var colors = ['#00796b', '#80cbc4', '#004d40', '#26a69a', '#b2dfdb'];
+            var particles = [];
+
+            for (var i = 0; i < 100; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    r: Math.random() * 4 + 1,
+                    d: Math.random() * 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    tilt: Math.random() * 10 - 10,
+                    tiltAngleIncremental: Math.random() * 0.07 + 0.05,
+                    tiltAngle: 0
+                });
+            }
+
+            function draw() {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                for (var i = 0; i < particles.length; i++) {
+                    var particle = particles[i];
+                    context.beginPath();
+                    context.lineWidth = particle.r;
+                    context.strokeStyle = particle.color;
+                    context.moveTo(particle.x + particle.tilt + particle.r, particle.y);
+                    context.lineTo(particle.x + particle.tilt, particle.y + particle.tilt + particle.r);
+                    context.stroke();
+                }
+
+                update();
+            }
+
+            function update() {
+                for (var i = 0; i < particles.length; i++) {
+                    var particle = particles[i];
+                    particle.tiltAngle += particle.tiltAngleIncremental;
+                    particle.y += (Math.cos(particle.d) + 3 + particle.r / 2) / 2;
+                    particle.tilt = Math.sin(particle.tiltAngle - i / 3) * 15;
+
+                    if (particle.y > canvas.height) {
+                        particles[i] = {
+                            x: Math.random() * canvas.width,
+                            y: -10,
+                            r: particle.r,
+                            d: particle.d,
+                            color: particle.color,
+                            tilt: particle.tilt,
+                            tiltAngleIncremental: particle.tiltAngleIncremental,
+                            tiltAngle: particle.tiltAngle
+                        };
+                    }
+                }
+            }
+
+            function loop() {
+                draw();
+                requestAnimationFrame(loop);
+            }
+
+            loop();
+        }
+    </script>
+</body>
+</html>
